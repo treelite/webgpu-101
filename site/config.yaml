@@ -1,0 +1,14 @@
+baseURL: /
+contentDir: ../tutorials/
+title: WebGPU 101
+permalinks: /:filename
+markup:
+  highlight:
+    noClasses: false
+disableKinds:
+  - RSS
+  - sitemap
+uglyURLs: true
+params:
+  Author: treelite
+  GitHub: https://github.com/treelite/webgpu-101

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ block "title" . }}{{ .Site.Title }}{{ end }}</title>
+    {{ $mainCSS := resources.Get "static/main.css" }}
+    {{ $syntaxCSS := resources.Get "static/syntax.css" }}
+    {{ $style := slice $mainCSS $syntaxCSS | resources.Concat "static/all.css" | resources.Minify | resources.Fingerprint "md5" }}
+    <link rel="stylesheet" href="{{ $style.Permalink }}">
+  </head>
+  <body>
+    <header>
+      <h1><a href="{{ .Site.BaseURL }}">WebGPU 101</a></h1>
+      <nav>
+        <ul>
+          {{ range .Site.RegularPages.ByDate.Reverse }}
+          <li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
+          {{ end }}
+        </ul>
+      </nav>
+    </header>
+    <main>
+      {{ block "main" . }}{{ end }}
+    </main>
+    <footer>© {{ now.Year }} {{ .Site.Params.Author }} | <a href="{{ .Site.Params.GitHub }}" target="_blank">GitHub</a></footer>
+  </body>
+</html>
