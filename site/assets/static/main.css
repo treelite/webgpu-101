@@ -84,6 +84,7 @@ main a {
 footer {
   clear: both;
   margin-top: 2rem;
+  padding-bottom: 2rem;
   text-align: center;
   font-size: 0.85rem;
   color: var(--text-secondary);
