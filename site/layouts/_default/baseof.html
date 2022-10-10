@@ -20,18 +20,26 @@
   </head>
   <body>
     <header>
-      <h1><a href="{{ .Site.BaseURL }}">WebGPU 101</a></h1>
-      <nav>
-        <ul>
-          {{ range .Site.RegularPages.ByDate.Reverse }}
-          <li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
-          {{ end }}
-        </ul>
-      </nav>
+      <a class="title" href="{{ .Site.BaseURL }}">WebGPU 101</a>
+      <button class="btn btn-menu">
+        {{ partial "icons/menu.svg" }}
+      </button>
     </header>
+    <nav>
+      <ul>
+        {{ range .Site.RegularPages.ByDate.Reverse }}
+        <li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
+        {{ end }}
+      </ul>
+      <button class="btn btn-close">
+        {{ partial "icons/close.svg" }}
+      </button>
+    </nav>
     <main>
       {{ block "main" . }}{{ end }}
     </main>
     <footer>© {{ now.Year }} {{ .Site.Params.Author }} | <a href="{{ .Site.Params.GitHub }}" target="_blank">GitHub</a></footer>
+    {{ $mainJS := resources.Get "static/main.js" | fingerprint "md5" }}
+    <script src="{{ $mainJS.Permalink }}"></script>
   </body>
 </html>

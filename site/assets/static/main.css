@@ -2,6 +2,8 @@
   --text-primary: #1b1b1b;
   --text-secondary: #4e4e4e;
   --text-link: #0069c2;
+  --border-primary: #cdcdcd;
+  --background-primary: #fff;
 }
 
 html {
@@ -13,7 +15,6 @@ html {
 body {
   margin: 0 auto;
   max-width: 1440px;
-  padding: 1rem 1rem 0;
   color: var(--text-primary);
 }
 
@@ -33,11 +34,11 @@ pre {
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
   padding: 0;
+  font-weight: 400;
 }
 
 h1 {
   font-size: 1.75rem;
-  margin-bottom: 1rem;
 }
 
 h2 {
@@ -54,27 +55,76 @@ h4, h5, h6 {
   font-size: 1rem;
 }
 
+svg.icon {
+  width: 2rem;
+  height: 2rem;
+  fill: currentColor;
+}
+
+img {
+  max-width: 100%;
+}
+
+button {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+button.btn {
+  color: var(--text-secondary);
+}
+
+pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 ul {
   margin: 0;
 }
 
 header {
+  grid-area: header;
   position: sticky;
-  float: left;
-  width: 18rem;
+  top: 0;
+  display: flex;
+  align-items: center;
+  background: var(--background-primary);
+  border-bottom: 1px solid var(--border-primary);
+  padding: 0.5rem;
 }
 
-header h1 {
-  font-size: 2rem;
+header a.title {
+  font-size: 1.5rem;
+  flex: 1;
 }
 
-header h1 a:hover {
+header a:hover {
   text-decoration: none;
 }
 
+nav {
+  display: none;
+  background: var(--background-primary);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+nav .btn-close {
+  position: absolute;
+  top: 1rem;
+  right: 0.5rem;
+}
+
 main {
-  margin-top: 4.6rem;
-  margin-left: 20rem;
+  grid-area: content;
+  padding: 0.5rem;
 }
 
 main a {
@@ -82,10 +132,55 @@ main a {
 }
 
 footer {
-  clear: both;
-  margin-top: 2rem;
-  padding-bottom: 2rem;
+  grid-area: footer;
   text-align: center;
   font-size: 0.85rem;
   color: var(--text-secondary);
+  padding-bottom: 1rem;
+}
+
+@media screen and (min-width: 768px) {
+  body {
+    padding: 0 1rem 1rem;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-areas:
+      "header header"
+      "nav content"
+      "footer footer";
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3.5fr);
+  }
+
+  header {
+    padding: 1rem 0;
+    border-bottom: none;
+    background: transparent;
+  }
+
+  header .btn-menu {
+    display: none;
+  }
+
+  nav {
+    display: block;
+    grid-area: nav;
+    position: static;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  nav ul {
+    position: sticky;
+    top: 6.2rem;
+    left: auto;
+    right: auto;
+  }
+
+  nav .btn-close {
+    display: none;
+  }
+
+  main {
+    padding: 0 1rem 0 0;
+  }
 }
