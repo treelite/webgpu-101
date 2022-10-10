@@ -39,7 +39,7 @@
       {{ block "main" . }}{{ end }}
     </main>
     <footer>© {{ now.Year }} {{ .Site.Params.Author }} | <a href="{{ .Site.Params.GitHub }}" target="_blank">GitHub</a></footer>
-    {{ $mainJS := resources.Get "static/main.js" | fingerprint "md5" }}
+    {{ $mainJS := resources.Get "static/main.js" | minify | fingerprint "md5" }}
     <script src="{{ $mainJS.Permalink }}"></script>
   </body>
 </html>
