@@ -8,7 +8,7 @@ $ npm run dev
 
 Then access `http://localhost:3000` to view examples. Due to the WebGPU standard is still in draft and expected to change, all examples are only tested in the latest Chrome, please use Chrome to access these examples.
 
-By default, the page will display the first example which pointed to chapter 0, please change the `src` of `script` element in `index.html` file to load and show other examples.
+By default, the index page will display the first example which pointed to chapter 0. There is a `chapter` query parameter can be used to show other examples, like the chapter 1: `http://localhost:3000/?chapter=1`.
 
 ## FQA
 
