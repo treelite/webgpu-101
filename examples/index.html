@@ -8,6 +8,11 @@
   </head>
   <body>
     <canvas width="600" height="600"></canvas>
-    <script type="module" src="/src/chapter-0.ts"></script>
+    <script type="module">
+      const params = new URLSearchParams(location.search);
+      const chapter = params.get("chapter") || 0;
+      const { default: main } = await import(`./src/chapter-${chapter}.ts`);
+      main(document.querySelector("canvas"));
+    </script>
   </body>
 </html>

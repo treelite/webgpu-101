@@ -1,17 +1,23 @@
-const main = async () => {
+/**
+ * Render an empty canvas with blue background
+ */
+
+const main = async (canvas: HTMLCanvasElement | null) => {
+  // Check whether the webgpu feature is enabled in browser
   if (!navigator.gpu) {
     throw new Error("please enable WebGPU");
   }
 
+  // Create adapter
   const adapter = await navigator.gpu.requestAdapter();
   if (!adapter) {
     throw new Error("failed to get adapter");
   }
 
   const presentFormat = navigator.gpu.getPreferredCanvasFormat();
+  // Create device
   const device = await adapter.requestDevice();
 
-  const canvas = document.querySelector("canvas");
   if (!canvas) {
     throw new Error("cannot find canvas element");
   }
@@ -19,6 +25,7 @@ const main = async () => {
   if (!ctx) {
     throw new Error("failed to get webgpu context");
   }
+  // Setup canvas context
   ctx.configure({
     device,
     format: presentFormat,
@@ -37,9 +44,8 @@ const main = async () => {
   renderPassEncoder.end();
   const cmdBuffer = cmdEncoder.finish();
 
+  // Submit command to GPU for execution
   device.queue.submit([cmdBuffer]);
 };
 
-main();
-
-export {};
+export default main;
