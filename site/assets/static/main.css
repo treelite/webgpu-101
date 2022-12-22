@@ -131,6 +131,10 @@ main a {
   color: var(--text-link);
 }
 
+.mermaid {
+  margin: 1rem 0;
+}
+
 footer {
   grid-area: footer;
   text-align: center;
