@@ -18,4 +18,4 @@ Please open the console tab to check detailed errors.
 
 ### I saw "Please enable WebGPU" error
 
-That's probably because the Chrome Origin Trials token was expired, please replace the existing one by your own token in the `inex.html` file.
+That's probably because the Chrome Origin Trials token was expired, please replace the existing one by your own token in the `index.html` file.

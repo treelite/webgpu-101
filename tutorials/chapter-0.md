@@ -50,7 +50,7 @@ GPU 编程有别于 CPU 编程的一大特点是需要经历从 CPU 到GPU 的�
 
 另外由于这种特殊的异步性质，WebGPU 的错误处理机制也有别于普通的脚本程序，后续会单独讨论。
 
-接下来我们就开始实现我们的第一个 WebGPU 示例：渲染一个蓝色的画布。[完整源码可以在这里找到](https://github.com/treelite/webgpu-101/tree/master/examples/src/chapter-0.ts)。
+接下来我们就开始实现我们的第一个 WebGPU 示例：渲染一个蓝色的画布。
 
 ### WebGPU 初始化
 
@@ -182,7 +182,7 @@ device.queue.submit([cmdBuffer]);
 
 ![空白的画布](./assets/empty-canvas.png)
 
-也就是说我们已经通过直接操作 GPU 来给页面画上了一个不算太难看的蓝色方块，恭喜！我们已经完成了第一个可运行的 WebGPU 程序。
+也就是说我们已经通过直接操作 GPU 来给页面画上了一个不算太难看的蓝色方块，恭喜！我们已经完成了[第一个可运行的 WebGPU 程序](https://github.com/treelite/webgpu-101/blob/master/examples/src/chapter-0.ts)。
 
 ## 总结
 
