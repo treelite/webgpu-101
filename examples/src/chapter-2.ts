@@ -13,14 +13,14 @@ const vertexSourceCode = `
     @location(0) color: vec4<f32>,
   }
 
-  // Bind moduleViewMatrix
+  // Bind modelViewMatrix
   @group(0) @binding(0)
-  var<uniform> moduleViewMatrix: mat4x4<f32>;
+  var<uniform> modelViewMatrix: mat4x4<f32>;
 
   @vertex
   fn main (@location(0) position: vec3<f32>, @location(1) color: vec4<f32>) -> Result {
     var res: Result;
-    res.position = moduleViewMatrix * vec4(position, 1.0);
+    res.position = modelViewMatrix * vec4(position, 1.0);
     res.color = color;
     return res;
   }
@@ -81,7 +81,7 @@ const main = async (canvas: HTMLCanvasElement | null) => {
     stepMode: "vertex",
   };
 
-  const moduleViewMatrixBuffer = device.createBuffer({
+  const modelViewMatrixBuffer = device.createBuffer({
     size: 4 * 16, // float32x(4x4)
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
   });
@@ -100,7 +100,7 @@ const main = async (canvas: HTMLCanvasElement | null) => {
       {
         binding: 0,
         resource: {
-          buffer: moduleViewMatrixBuffer,
+          buffer: modelViewMatrixBuffer,
         },
       }
     ]
@@ -132,7 +132,7 @@ const main = async (canvas: HTMLCanvasElement | null) => {
     const dt = now - lastRenderTime;
     const newAngle = lastAngle + angleSpeed * dt;
     // Module view transform matrix
-    const moduleViewMatrix = (new Matrix4()).translate(-0.5, 0.5, 0).scale(0.5, 0.5, 1).rotateZ(newAngle).toWebGPUMatrix();
+    const modelViewMatrix = (new Matrix4()).translate(-0.5, 0.5, 0).scale(0.5, 0.5, 1).rotateZ(newAngle).toWebGPUMatrix();
 
     const cmdEncoder = device.createCommandEncoder();
     const passEncoder = cmdEncoder.beginRenderPass({
@@ -150,8 +150,8 @@ const main = async (canvas: HTMLCanvasElement | null) => {
     passEncoder.draw(3);
     passEncoder.end();
 
-    // Write the new matrix into moduleViewMatrixBuffer
-    device.queue.writeBuffer(moduleViewMatrixBuffer, 0, moduleViewMatrix);
+    // Write the new matrix into modelViewMatrixBuffer
+    device.queue.writeBuffer(modelViewMatrixBuffer, 0, modelViewMatrix);
     device.queue.submit([cmdEncoder.finish()]);
 
     // Wait for next render
