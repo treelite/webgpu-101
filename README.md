@@ -8,7 +8,7 @@ This is a series of tutorials about [WebGPU](https://www.w3.org/TR/webgpu)
 
 * [Hello WebGPU](https://webgpu.treelite.me/chapter-0.html)，搭建开发环境并实现第一个 WebGPU 程序
 * [2D绘图](https://webgpu.treelite.me/chapter-1.html)，在 2D 坐标系下进行绘图，涉及渲染管线、顶点着色器、片原着色器
-* 基本动画，涉及矩阵变化及缓冲区数据交换
+* [基本动画](https://webgpu.treelite.me/chapter-2.html)，涉及矩阵变化及缓冲区数据交换
 * 3D绘图，在 3D 坐标系下进行绘图，涉及矩阵顶点索引及其深度检测
 * 纹理贴图
 * 光线
