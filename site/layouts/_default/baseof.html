@@ -29,7 +29,7 @@
     </header>
     <nav>
       <ul>
-        {{ range .Site.RegularPages.ByDate.Reverse }}
+        {{ range .Site.RegularPages.ByWeight }}
         <li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
         {{ end }}
       </ul>

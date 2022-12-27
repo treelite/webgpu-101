@@ -23,3 +23,5 @@ export const initWebGPU = async (canvas: HTMLCanvasElement) => {
 
   return { device, ctx, presentFormat };
 };
+
+export const requestNextAnimiationFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
