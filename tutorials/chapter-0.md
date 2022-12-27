@@ -1,5 +1,6 @@
 ---
 title: "Hello WebGPU"
+weight: 1
 ---
 
 目前 WebGPU 还处于技术体验阶段，[未被浏览器正式启用](https://caniuse.com/?search=webgpu)，我们还需要一些额外的设置来开启它。本篇主要围绕开发环境的搭建及其我们的第一个 WebGPU 示例来展开。
