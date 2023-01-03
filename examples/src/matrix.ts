@@ -55,6 +55,32 @@ export class Matrix4 {
     return this;
   }
 
+  public setRotateX(angle: number) {
+    const radian = Math.PI * angle / 180;
+    const cos = Math.cos(radian);
+    const sin = Math.sin(radian);
+    this.data = [
+      1, 0, 0, 0,
+      0, sin, cos, 0,
+      0, cos, -1 * sin, 0,
+      0, 0, 0, 1,
+    ];
+    return this;
+  }
+
+  public setRotateY(angle: number) {
+    const radian = Math.PI * angle / 180;
+    const cos = Math.cos(radian);
+    const sin = Math.sin(radian);
+    this.data = [
+      cos, 0, sin, 0,
+      0, 1, 0, 0,
+      -1 *sin, 0, cos, 0,
+      0, 0, 0, 1,
+    ];
+    return this;
+  }
+
   public multiply(m: Matrix4) {
     const res:number[] = [];
     for (let i = 0; i < 4; i++) {
@@ -82,5 +108,13 @@ export class Matrix4 {
 
   public rotateZ(angle: number) {
     return this.multiply((new Matrix4()).setRotateZ(angle));
+  }
+
+  public rotateY(angle: number) {
+    return this.multiply((new Matrix4()).setRotateY(angle));
+  }
+
+  public rotateX(angle: number) {
+    return this.multiply((new Matrix4()).setRotateX(angle));
   }
 }

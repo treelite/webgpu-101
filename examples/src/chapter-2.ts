@@ -3,7 +3,7 @@
  * Basic animation
  */
 
-import { initWebGPU, requestNextAnimiationFrame, } from "./utils";
+import { initWebGPU, requestNextAnimiationFrame } from "./utils";
 import { Matrix4 } from "./matrix";
 
 // Vertex shader code
