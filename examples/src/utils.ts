@@ -19,13 +19,25 @@ export const initWebGPU = async (canvas: HTMLCanvasElement | null) => {
   if (!ctx) {
     throw new Error("failed to get webgpu context");
   }
+
+  const view = {
+    width: canvas.width * devicePixelRatio,
+    height: canvas.height * devicePixelRatio,
+  };
+
+  // Reset canvas's size to include the devicePixelRatio
+  canvas.style.width = canvas.width + "px";
+  canvas.style.height = canvas.height + "px";
+  canvas.width = view.width;
+  canvas.height = view.height;
+
   ctx.configure({
     device,
     format: presentFormat,
     alphaMode: "premultiplied",
   });
 
-  return { device, ctx, presentFormat };
+  return { device, ctx, presentFormat, view };
 };
 
 export const requestNextAnimiationFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
