@@ -1,4 +1,4 @@
-import { initWebGPU, createBufferWithData } from "./utils";
+import { initWebGPU, createBufferWithData, requestNextAnimiationFrame } from "./utils";
 import { Matrix4 } from "./matrix";
 
 const vertexSourceCode = `
@@ -39,6 +39,10 @@ const vertices = new Float32Array([
 ]);
 
 const vertexIndex = new Uint16Array([
+  // Front
+  0, 1, 2,
+  2, 3, 0,
+
   // Back
   4, 5, 6,
   6, 7, 4,
@@ -47,23 +51,18 @@ const vertexIndex = new Uint16Array([
   4, 0, 3,
   3, 7, 4,
 
-  // Bottom
-  7, 6, 2,
-  2, 3, 7,
+  // Right
+  1, 5, 6,
+  6, 2, 1,
 
   // Top
   4, 5, 1,
   1, 0, 4,
 
-  // Front
-  0, 1, 2,
-  2, 3, 0,
-
-  // Right
-  1, 5, 6,
-  6, 2, 1,
+  // Bottom
+  7, 6, 2,
+  2, 3, 7,
 ]);
-
 
 const main = async (canvas: HTMLCanvasElement | null) => {
   const { device, ctx, presentFormat, view } = await initWebGPU(canvas);
@@ -74,11 +73,10 @@ const main = async (canvas: HTMLCanvasElement | null) => {
   const vertexBuffer = createBufferWithData(device, GPUBufferUsage.VERTEX, vertices);
 
   const vertexIndexBuffer = createBufferWithData(device, GPUBufferUsage.INDEX, vertexIndex);
-  const modelViewMatrix = (new Matrix4())
-    .setPerspective(30, view.width / view.height, 1, 100)
-    .lookAt([3, 3, 7], [0, 0, 0], [0, 1, 0])
-    .scale(0.5, 0.5, 0.5);
-  const modelViewMatrixBuffer = createBufferWithData(device, GPUBufferUsage.UNIFORM, modelViewMatrix.toWebGPUMatrix());
+  const modelViewMatrixBuffer = device.createBuffer({
+    size: 64,
+    usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+  });
 
   const vertexBufferLayout: GPUVertexBufferLayout = {
     attributes: [
@@ -122,18 +120,12 @@ const main = async (canvas: HTMLCanvasElement | null) => {
     primitive: {
       topology: "triangle-list",
     },
+    depthStencil: {
+      format: "depth24plus",
+      depthWriteEnabled: true,
+      depthCompare: "less",
+    },
   });
-
-  const cmdEncoder = device.createCommandEncoder();
-  const passEncoder = cmdEncoder.beginRenderPass({
-    colorAttachments: [{
-      view: ctx.getCurrentTexture().createView(),
-      loadOp: "clear",
-      storeOp: "store",
-      clearValue: { r: 0, g: 0, b: 0, a: 1 },
-    }],
-  })
-  passEncoder.setPipeline(renderPipeline);
 
   const bindGroup = device.createBindGroup({
     layout: bindGroupLayout,
@@ -144,14 +136,57 @@ const main = async (canvas: HTMLCanvasElement | null) => {
       },
     }],
   });
-  passEncoder.setBindGroup(0, bindGroup);
-  passEncoder.setIndexBuffer(vertexIndexBuffer, "uint16");
-  passEncoder.setVertexBuffer(0, vertexBuffer);
 
-  passEncoder.drawIndexed(vertexIndex.length);
-  passEncoder.end();
+  const depthTexture = device.createTexture({
+    size: view,
+    format: "depth24plus",
+    usage: GPUTextureUsage.RENDER_ATTACHMENT,
+  });
 
-  device.queue.submit([cmdEncoder.finish()]);
+  const speed = 0.1;
+  const render = async (lastTime: number, lastAngle: number) => {
+    const now = Date.now();
+    const dt = now - lastTime;
+    const angle = lastAngle + dt * speed;
+
+    const modelViewMatrix = (new Matrix4())
+      .setPerspective(30, view.width / view.height, 1, 100)
+      .lookAt([3, 3, 7], [0, 0, 0], [0, 1, 0])
+      .rotateY(angle)
+      .rotateX(angle)
+      .scale(0.5, 0.5, 0.5);
+
+    const cmdEncoder = device.createCommandEncoder();
+    const passEncoder = cmdEncoder.beginRenderPass({
+      colorAttachments: [{
+        view: ctx.getCurrentTexture().createView(),
+        loadOp: "clear",
+        storeOp: "store",
+        clearValue: { r: 0, g: 0, b: 0, a: 1 },
+      }],
+      depthStencilAttachment: {
+        view: depthTexture.createView(),
+        depthClearValue: 1,
+        depthLoadOp: "clear",
+        depthStoreOp: "store",
+      },
+    })
+    passEncoder.setPipeline(renderPipeline);
+    passEncoder.setBindGroup(0, bindGroup);
+    passEncoder.setIndexBuffer(vertexIndexBuffer, "uint16");
+    passEncoder.setVertexBuffer(0, vertexBuffer);
+
+    passEncoder.drawIndexed(vertexIndex.length);
+    passEncoder.end();
+
+    device.queue.writeBuffer(modelViewMatrixBuffer, 0, modelViewMatrix.toWebGPUMatrix());
+    device.queue.submit([cmdEncoder.finish()]);
+
+    await requestNextAnimiationFrame();
+    render(now, angle);
+  };
+
+  await render(Date.now(), 0);
 };
 
 export default main;
