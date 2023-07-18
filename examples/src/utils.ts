@@ -58,3 +58,10 @@ export const createBufferWithData = (device: GPUDevice, usage: GPUBufferUsageFla
 
   return buffer;
 };
+
+export const loadImage = async (src: string) => {
+  const img = new Image();
+  img.src = src;
+  await img.decode();
+  return createImageBitmap(img);
+};

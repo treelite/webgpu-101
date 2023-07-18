@@ -61,8 +61,8 @@ export class Matrix4 {
     const sin = Math.sin(radian);
     this.data = [
       1, 0, 0, 0,
-      0, sin, cos, 0,
       0, cos, -1 * sin, 0,
+      0, sin, cos, 0,
       0, 0, 0, 1,
     ];
     return this;
