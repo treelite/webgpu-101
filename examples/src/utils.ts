@@ -65,3 +65,65 @@ export const loadImage = async (src: string) => {
   await img.decode();
   return createImageBitmap(img);
 };
+
+const parseObj = (source: string) => {
+  const lines = source.split(/\r?\n+/);
+  const vertices: Array<number[]> = [];
+  const index: Array<number[]> = [];
+  const normal: Array<number[]> = [];
+
+  // Only pick up vertex position("v"), normal("vn") and index("f")
+  for (const line of lines) {
+    if (line.startsWith("v ")) {
+      vertices.push(line.substring(2).split(" ").map(parseFloat));
+    } else if (line.startsWith("vn ")) {
+      normal.push(line.substring(3).split(" ").map(parseFloat));
+    } else if (line.startsWith("f ")) {
+      // Collect index based on face
+      const values = line.substring(2).split(" ");
+      const res = [];
+      for (let i = 0; i < values.length; i++) {
+        const value = values[i].split("/").map(v => parseInt(v, 10) - 1);
+        res.push(value);
+      }
+      // Change 4-sided face to 3-sided face
+      if (res.length > 3) {
+        res.splice(2, 0, res[2]);
+        res.push(res[0]);
+      }
+      index.push(...res);
+    }
+  }
+
+  // Merge vertex position and normal,
+  // rebuild the index
+  const vertexData = [];
+  const indexData = [];
+  const indexMap: Map<string, number> = new Map();
+  let vertexCount = 0;
+  for (const item of index) {
+    const vertexIndex = item[0];
+    const normalIndex = item[2];
+    const key = `${vertexIndex}|${normalIndex}`;
+    if (!indexMap.has(key)) {
+      vertexData.push(...vertices[vertexIndex]);
+      vertexData.push(...normal[normalIndex]);
+      indexMap.set(key, vertexCount++);
+    }
+    indexData.push(indexMap.get(key)!);
+  }
+
+  return {
+    vertices: new Float32Array(vertexData),
+    vertexIndex: new Uint16Array(indexData),
+  };
+};
+
+export const loadObj = async (src: string) => {
+  const res = await fetch(src);
+  if (!res.ok) {
+    throw new Error(`cannot fetch ${src}`);
+  }
+
+  return parseObj(await res.text());
+};

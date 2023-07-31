@@ -1,5 +1,5 @@
 node_modules/
-public/
+site/public/
 
 .DS_Store
 .idea
