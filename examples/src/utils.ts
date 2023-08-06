@@ -1,3 +1,5 @@
+import { Vector3 } from "./vector";
+
 export const initWebGPU = async (canvas: HTMLCanvasElement | null) => {
   if (!canvas) {
     throw new Error("cannot find canvas element");
@@ -66,13 +68,19 @@ export const loadImage = async (src: string) => {
   return createImageBitmap(img);
 };
 
+const calcNormal = (p1: number[], p2: number[], p3: number[]) => {
+  const v1 = new Vector3(p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]);
+  const v2 = new Vector3(p3[0] - p1[0], p3[1] - p1[1], p3[2] - p1[2]);
+  return v1.multiply(v2).toArray();
+};
+
 const parseObj = (source: string) => {
   const lines = source.split(/\r?\n+/);
   const vertices: Array<number[]> = [];
   const index: Array<number[]> = [];
   const normal: Array<number[]> = [];
 
-  // Only pick up vertex position("v"), normal("vn") and index("f")
+  // Only pick up vertex position("v"), normal("vn") and face("f")
   for (const line of lines) {
     if (line.startsWith("v ")) {
       vertices.push(line.substring(2).split(" ").map(parseFloat));
@@ -81,17 +89,32 @@ const parseObj = (source: string) => {
     } else if (line.startsWith("f ")) {
       // Collect index based on face
       const values = line.substring(2).split(" ");
-      const res = [];
+      const face: Array<number[]> = [];
       for (let i = 0; i < values.length; i++) {
         const value = values[i].split("/").map(v => parseInt(v, 10) - 1);
-        res.push(value);
+        face.push(value);
       }
-      // Change 4-sided face to 3-sided face
-      if (res.length > 3) {
-        res.splice(2, 0, res[2]);
-        res.push(res[0]);
+
+      // Change polygon to multiple triangles
+      // WebGPU doesn't support triangle-face render
+      // v1, v2, v3, v4 -> v1, v2, v3, v1, v3, v4
+      for (let i = 3; i < face.length; i += 3) {
+        face.splice(i, 0, face[0], face[i - 1]);
       }
-      index.push(...res);
+
+      // Calculate normal if it's not specified
+      if (face[0][2] === undefined) {
+        const v1 = vertices[face[0][0]];
+        const v2 = vertices[face[1][0]];
+        const v3 = vertices[face[2][0]];
+        const i = normal.push(calcNormal(v1, v2, v3));
+        // Update normal index
+        for (const item of face) {
+          item[2] = i - 1;
+        }
+      }
+
+      index.push(...face);
     }
   }
 
